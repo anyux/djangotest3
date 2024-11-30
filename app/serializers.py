@@ -11,6 +11,21 @@ class UserInfoSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=40)
     age = serializers.IntegerField(min_value=0, max_value=150)
 
+    def create(self, validated_data):
+        """自定义序列化器保存数据的方法"""
+
+        return UserInfo.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """自定义序列化器更新数据的方法"""
+        type(instance)
+        instance.name = validated_data.get('name', instance.name)
+        instance.pwd = validated_data.get('pwd', instance.pwd)
+        instance.email = validated_data.get('email', instance.email)
+        instance.age = validated_data.get('age', instance.age)
+        instance.save()
+        return instance
+
 class AddressSerializer(serializers.Serializer):
     """定义地址表序列化器"""
     id = serializers.IntegerField(read_only=True)

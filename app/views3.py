@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+
 
 from app.models import UserInfo, Addr
 from app.serializers import UserInfoSerializer, AddrSerializer
@@ -342,12 +342,3 @@ class UserViewSet(viewsets.ViewSet):
         user.delete()
         #返回数据结果
         return Response({})
-
-
-class UserModelViewSet(ModelViewSet):
-    # 导入查询结果集
-    queryset = UserInfo.objects.all()
-    # 导入序列化类
-    serializer_class = UserInfoSerializer
-    # 设置查询字段
-    lookup_field='id'

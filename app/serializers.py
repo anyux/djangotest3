@@ -44,3 +44,4 @@ class AddrSerializer(serializers.ModelSerializer):
     class Meta:
         model = Addr
         fields = '__all__'
+        read_only_fields = ("id",)

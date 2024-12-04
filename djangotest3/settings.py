@@ -41,6 +41,10 @@ INSTALLED_APPS = [
     "rest_framework",
     # 添加应用
     "app",
+    #后端过滤
+    "django_filters",
+    #api文档
+    'coreapi',
 ]
 
 MIDDLEWARE = [
@@ -114,9 +118,13 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+#
+# TIME_ZONE = 'UTC'
 
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'zh-hans'
+TIME_ZONE = 'Asia/Shanghai'
+
 
 USE_I18N = True
 
@@ -134,3 +142,52 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# REST 框架配置
+#在配置文件中配置全局默认的
+REST_FRAMEWORK = {
+    # 默认认证类
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 基于 HTTP Basic 认证的身份验证方式,客户端需要在请求头中提供Authorization 字段,
+        # 内容为 Basic <credentials>，其中 <credentials> 是 username:password 经过 Base64 编码后的字符串
+        # 适用于测试场景
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 依赖于 Django 的会话（session）框架,服务器会在用户的浏览器中设置一个会话 cookie，
+        # 后续的请求会携带这个 cookie 来标识用户身份
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 基于令牌的认证机制,用户通过登录获取一个令牌（token），后续的请求需要在请求头中提供 Authorization 字段，内容为 Token <token>
+        # 'rest_framework.authentication.TokenAuthentication',
+    ),
+    # 默认权限管理类
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 表示只有登录的用户才能访问
+        # 'rest_framework.permissions.IsAuthenticated',
+        #如果未指明,默认采用所有用户均可访问
+        # 'rest_framework.permissions.AllowAny',
+        # 表示只有超级管理员才能访问
+        # 'rest_framework.permissions.IsAdminUser',
+        # 认证的用户可以完全操作,否则只能get读取
+        # 'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
+    # 设置限流类型
+    'DEFAULT_THROTTLE_CLASSES': (
+        # 限制所有匿名未认证用户
+        # 'rest_framework.throttling.AnonRateThrottle',
+        # 限制认证用户
+        # 'rest_framework.throttling.UserRateThrottle',
+    ),
+    # 设置限制的频率
+    'DEFAULT_THROTTLE_RATES': {
+        # 频率周期
+        # second:秒,minute:分钟,hour:小时,day:每天
+        # 未认证用户
+        'anon': '1/day',
+        # 认证用户
+        'user': '10/minute',
+    },
+    #在配置文件中增加过滤后端的设置
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    #设置api文档配置
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+}
+

@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework.generics import GenericAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from app.models import UserInfo, Addr
 from app.serializers import UserInfoSerializer, AddrSerializer
@@ -350,4 +350,12 @@ class UserModelViewSet(ModelViewSet):
     # 导入序列化类
     serializer_class = UserInfoSerializer
     # 设置查询字段
+    lookup_field='id'
+
+
+class CustomUserViewSet(ReadOnlyModelViewSet,
+                        mixins.CreateModelMixin,
+                        ):
+    queryset = UserInfo.objects.all()
+    serializer_class = UserInfoSerializer
     lookup_field='id'

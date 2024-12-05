@@ -189,6 +189,22 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     #设置api文档配置
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    #调DRF使用的默认过滤器filter_backends = [OrderingFilter]
+    'DEFAULT_FILTER_BACKENDS': (
+        # 指定django_filters中的过滤器过滤
+        'django_filters.rest_framework.DjangoFilterBackend',
+        # 指定drf自带的排序过滤器过滤
+        'rest_framework.filters.OrderingFilter',
+    ),
+
+    #设置分类器,全局配置,对所有获取数据列表的接口生效
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    #指定每页数据量
+    # 'PAGE_SIZE': 10,
+    # 默认的异常处理方式
+    # "EXCEPTION_HANDLER": "rest_framework.views.exceptions",
+    # 使用自定义异常处理方式
+    "EXCEPTION_HANDLER": "app.utils.custom_exception_handler.my_exception_handler"
 }
 
 LOGGING = {

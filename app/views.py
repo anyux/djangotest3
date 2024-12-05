@@ -49,9 +49,9 @@ class UserModelViewSet(ModelViewSet):
     pagination_class = UserInfoPagination
 
     #定义list方法
-    def list(self, request, *args, **kwargs):
-        print(a)
-        return super().list(request, *args, **kwargs)
+    # def list(self, request, *args, **kwargs):
+    #     print(a)
+    #     return super().list(request, *args, **kwargs)
 
 class AddrModelViewSet(ModelViewSet):
     #指定认证的方式

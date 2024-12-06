@@ -1,6 +1,10 @@
 #认证库
+import os
+from pathlib import Path
+
+from django.http import FileResponse
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
-from rest_framework.decorators import api_view, throttle_classes
+from rest_framework.decorators import api_view, throttle_classes, action
 #权限权限
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -13,6 +17,7 @@ from app.filters import UserInfoFilter, AddrFilter
 from app.models import UserInfo, Addr, ImageModel
 from app.pagination import UserInfoPagination
 from app.serializers import UserInfoSerializer, AddrSerializer, ImageSerializer
+from djangotest3.settings import MEDIA_ROOT, MEDIA_URL
 
 
 class UserModelViewSet(ModelViewSet):
@@ -100,3 +105,23 @@ class ImageView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListM
         else:
             return super().create(request, *args, **kwargs)
 
+
+    def retrieve(self, request, *args, **kwargs):
+        """自定义图片下载"""
+        pic = self.get_object()
+        file_path = Path(pic.path.path)  # 使用 pathlib 处理路径
+
+        try:
+            # 使用 with 语句确保文件正确关闭
+            response = FileResponse(file_path.open('rb'), as_attachment=True, filename=file_path.name)
+            return response
+        except FileNotFoundError:
+            return Response({"error": "File not found."}, status=404)
+        except IOError:
+            return Response({"error": "Error opening file."}, status=500)
+
+def get_image(request,name):
+    """获取图片并返回"""
+    # 通过文件名拼接完整的文件路径,返回完整图片给前端
+    path = os.path.join(MEDIA_ROOT, name)
+    return FileResponse(open(path,'rb'))

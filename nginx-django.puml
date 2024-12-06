@@ -1,0 +1,22 @@
+```puml
+@startuml
+actor User
+participant "Browser" as Browser
+participant "Frontend Application" as Frontend
+participant "Nginx" as Nginx
+participant "Python Backend" as Backend
+database "Database" as DB
+
+User -> Browser: 发起文件请求 (e.g., /get-file-path/1/)
+Browser -> Frontend: 发送HTTP请求
+Frontend -> Backend: 查询文件路径 (e.g., /api/get-file-path/1/)
+Backend -> DB: 查询数据库以获取文件路径
+DB --> Backend: 返回文件路径 (e.g., /static/images/photo.jpg)
+Backend --> Frontend: 返回文件路径 (JSON格式)
+Frontend -> Browser: 更新页面中的文件路径 (e.g., http://your_domain.com/static/images/photo.jpg)
+Browser -> Nginx: 发起静态文件请求 (e.g., /static/images/photo.jpg)
+Nginx -> Nginx: 查找文件路径
+Nginx --> Browser: 返回静态文件 (图片)
+
+@enduml
+```

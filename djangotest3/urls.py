@@ -16,9 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from rest_framework.documentation import include_docs_urls
+
+from app import views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('app/', include('app.urls')),
     re_path(r'^docs/', include_docs_urls(title='接口文档')),
+    re_path(r'^file/image/(?P<name>.*)/?$',views.get_image, name='image' ),
 ]

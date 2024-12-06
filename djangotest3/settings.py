@@ -230,4 +230,5 @@ LOGGING = {
 #指定文件上传存放的路径:方式2
 MEDIA_ROOT = os.path.join(BASE_DIR,'file','image')
 #指定文件的url路径
-MEDIA_URL = '/media/'
+MEDIA_URL = 'file/image/'
+

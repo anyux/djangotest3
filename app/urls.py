@@ -1,7 +1,7 @@
 
 from django.urls import path, include, re_path
 
-from app.views import  UserModelViewSet,AddrModelViewSet
+from app.views import UserModelViewSet, AddrModelViewSet, ImageView
 
 #导入路由库
 from rest_framework import routers
@@ -10,6 +10,7 @@ from rest_framework import routers
 router = routers.SimpleRouter()
 router.register(r'users', UserModelViewSet)
 router.register(r'addrs', AddrModelViewSet)
+router.register(r'uploads', ImageView)
 
 urlpatterns = [
     # re_path(r'^users/?$', UserViewSet.as_view({"get":"list","post":"create"}), name='user'),

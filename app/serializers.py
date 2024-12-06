@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from app.models import UserInfo, Addr
+from app.models import UserInfo, Addr, ImageModel
+
 
 # def length_validate(value):
 #     if not(10<len(value)<20):
@@ -45,3 +46,11 @@ class AddrSerializer(serializers.ModelSerializer):
         model = Addr
         fields = '__all__'
         read_only_fields = ("id",)
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    """图片管理序列化器"""
+
+    class Meta:
+        model = ImageModel
+        fields = '__all__'

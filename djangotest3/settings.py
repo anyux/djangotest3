@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os.path
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -204,7 +204,7 @@ REST_FRAMEWORK = {
     # 默认的异常处理方式
     # "EXCEPTION_HANDLER": "rest_framework.views.exceptions",
     # 使用自定义异常处理方式
-    "EXCEPTION_HANDLER": "app.utils.custom_exception_handler.my_exception_handler"
+    # "EXCEPTION_HANDLER": "app.utils.custom_exception_handler.my_exception_handler"
 }
 
 LOGGING = {
@@ -224,3 +224,10 @@ LOGGING = {
         },
     }
 }
+
+# 指定文件上传存放的路径:方式1
+# MEDIA_ROOT = BASE_DIR / 'file' / 'image'
+#指定文件上传存放的路径:方式2
+MEDIA_ROOT = os.path.join(BASE_DIR,'file','image')
+#指定文件的url路径
+MEDIA_URL = '/media/'

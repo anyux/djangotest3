@@ -3,17 +3,16 @@ from rest_framework.authentication import TokenAuthentication, SessionAuthentica
 from rest_framework.decorators import api_view, throttle_classes
 #权限权限
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.viewsets import ModelViewSet
 #导入drf过滤器
-from rest_framework import filters
-
+from rest_framework import filters, status
 
 from app.filters import UserInfoFilter, AddrFilter
-from app.models import UserInfo, Addr
+from app.models import UserInfo, Addr, ImageModel
 from app.pagination import UserInfoPagination
-from app.serializers import UserInfoSerializer, AddrSerializer
-
+from app.serializers import UserInfoSerializer, AddrSerializer, ImageSerializer
 
 
 class UserModelViewSet(ModelViewSet):
@@ -69,3 +68,35 @@ class AddrModelViewSet(ModelViewSet):
     # filterset_fields = ('name','email')
     # 方式2: 指定过滤器类
     filterset_class = AddrFilter
+
+
+from rest_framework.viewsets import mixins,GenericViewSet
+class ImageView(mixins.CreateModelMixin, mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
+
+    queryset = ImageModel.objects.all()
+    serializer_class = ImageSerializer
+
+    def create(self, request, *args, **kwargs):
+        """自定义图片上传功能"""
+        image = request.data.get('path')
+        # 获取图片名称
+        name = image.name
+        # 获取图片大小
+        size = image.size
+        # 获取图片类型
+        type = image.content_type
+
+        # 设置图片上传大小能起过30k
+        if size > 1024 * 30000:
+            max_size = {
+                'error': "图片大小不能超过30k"
+            }
+            return Response(max_size, status=status.HTTP_400_BAD_REQUEST)
+        elif type not in ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/bmp']:
+            type_error = {
+                'error': f"图片类型不正确{type}"
+            }
+            return Response(type_error, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return super().create(request, *args, **kwargs)
+

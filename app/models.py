@@ -36,7 +36,22 @@ class Addr(models.Model):
         verbose_name_plural = verbose_name
 
 
+class ImageModel(models.Model):
+    """文件上传"""
 
+    # 用于保存文件
+    # file = models.IntegerField()
+
+    # 用于保存图片
+    path = models.ImageField()
+
+    def __str__(self):
+        return self.path
+
+    class Meta:
+        db_table = "Images"
+        verbose_name = "图片"
+        verbose_name_plural = verbose_name
 
 
 

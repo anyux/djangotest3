@@ -45,9 +45,23 @@ INSTALLED_APPS = [
     "django_filters",
     #api文档
     'coreapi',
+    # 跨域
+    'corsheaders',
 ]
 
+#对外开放白名单
+CORS_ORIGIN_ALLOW_ALL = True
+#允许跨域操作session会话
+# CORS_ALLOW_CREDENTIALS = True
+#指定可以访问的跨域ip或域名
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    "http://192.168.8.101:8080",
+)
+
 MIDDLEWARE = [
+    #跨域中间件
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

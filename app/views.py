@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 
+from django.db.models.expressions import result
 from django.http import FileResponse
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication, BasicAuthentication
 from rest_framework.decorators import api_view, throttle_classes, action
@@ -12,6 +13,8 @@ from rest_framework.throttling import UserRateThrottle
 from rest_framework.viewsets import ModelViewSet
 #导入drf过滤器
 from rest_framework import filters, status
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from app.filters import UserInfoFilter, AddrFilter
 from app.models import UserInfo, Addr, ImageModel
@@ -125,3 +128,32 @@ def get_image(request,name):
     # 通过文件名拼接完整的文件路径,返回完整图片给前端
     path = os.path.join(MEDIA_ROOT, name)
     return FileResponse(open(path,'rb'))
+
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+class MyLoginTokenObtainPairView(TokenObtainPairView):
+    # serializer_class = TokenObtainPairSerializer
+    # pass
+    # 重写 post方法
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+        # 自定义返回结果
+        # 获取TokenObtainPairView类默认返回值access_token和refresh_token
+        result = serializer.validated_data
+        # 获取邮箱
+        result['email'] = serializer.user.email
+        # 获取用户名称
+        result['username'] = serializer.user.username
+        # 获取用户id
+        result['id'] = serializer.user.id
+        # 手动指定返回的token字段名称
+        result['token'] = result.pop('access')
+        # 原来默认返回结果只有access_token和refresh_token
+        # return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(result, status=status.HTTP_200_OK)

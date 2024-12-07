@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'coreapi',
     # 跨域
     'corsheaders',
+    # jwt认证插件
+    'rest_framework_simplejwt'
 ]
 
 #对外开放白名单
@@ -162,20 +164,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     # 默认认证类
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 将jwt添加到身份验证类列表
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
         # 基于 HTTP Basic 认证的身份验证方式,客户端需要在请求头中提供Authorization 字段,
         # 内容为 Basic <credentials>，其中 <credentials> 是 username:password 经过 Base64 编码后的字符串
         # 适用于测试场景
         # 'rest_framework.authentication.BasicAuthentication',
         # 依赖于 Django 的会话（session）框架,服务器会在用户的浏览器中设置一个会话 cookie，
         # 后续的请求会携带这个 cookie 来标识用户身份
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
         # 基于令牌的认证机制,用户通过登录获取一个令牌（token），后续的请求需要在请求头中提供 Authorization 字段，内容为 Token <token>
         # 'rest_framework.authentication.TokenAuthentication',
     ),
     # 默认权限管理类
     'DEFAULT_PERMISSION_CLASSES': (
         # 表示只有登录的用户才能访问
-        # 'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
         #如果未指明,默认采用所有用户均可访问
         # 'rest_framework.permissions.AllowAny',
         # 表示只有超级管理员才能访问
@@ -199,8 +203,8 @@ REST_FRAMEWORK = {
         # 认证用户
         'user': '10/minute',
     },
-    #在配置文件中增加过滤后端的设置
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
+    # #在配置文件中增加过滤后端的设置
+    # 'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     #设置api文档配置
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     #调DRF使用的默认过滤器filter_backends = [OrderingFilter]
@@ -219,6 +223,7 @@ REST_FRAMEWORK = {
     # "EXCEPTION_HANDLER": "rest_framework.views.exceptions",
     # 使用自定义异常处理方式
     # "EXCEPTION_HANDLER": "app.utils.custom_exception_handler.my_exception_handler"
+
 }
 
 LOGGING = {
@@ -246,3 +251,50 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'file','image')
 #指定文件的url路径
 MEDIA_URL = 'file/image/'
 
+# 复制到django 项目的settings.py中
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    # 指定访问令牌的有效期 默认5分钟
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    # 刷新令牌的有效期 默认1天
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+    # 加密算法
+    "ALGORITHM": "HS256",
+    # 密钥
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+    # token类型
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    # token的用户id
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+
+    "JTI_CLAIM": "jti",
+
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
